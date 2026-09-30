@@ -263,10 +263,10 @@ export default function DashboardPage() {
                 {stats.recentSessions.map(session => (
                   <li key={session.id} className="flex items-center justify-between">
                     <div className="flex items-center gap-2 min-w-0">
-                      <MessageSquare className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                      <MessageSquare className="h-4 w-4 text-muted-foreground shrink-0" />
                       <span className="text-sm truncate">{session.preview}</span>
                     </div>
-                    <span className="text-xs text-muted-foreground flex-shrink-0">
+                    <span className="text-xs text-muted-foreground shrink-0">
                       {formatDate(session.created_at)}
                     </span>
                   </li>
