@@ -194,9 +194,9 @@ export async function logToolExecution(
     workspace_id: workspaceId,
     session_id: sessionId || null,
     tool_name: log.toolName,
-    arguments: log.args,
-    result: log.result,
-    status: log.status,
+    arguments: JSON.parse(JSON.stringify(log.args)),
+    result: JSON.parse(JSON.stringify(log.result)),
+    status: log.status as 'success' | 'error',
   })
 }
 

@@ -78,11 +78,12 @@ export async function ingestDocument(
   const embeddings = await generateEmbeddings(chunks.map(c => c.content))
 
   // Insert chunks with embeddings
+  // Convert embedding array to string format for pgvector
   const chunkRecords = chunks.map((chunk, i) => ({
     document_id: document.id,
     workspace_id: workspaceId,
     content: chunk.content,
-    embedding: embeddings[i],
+    embedding: `[${embeddings[i].join(',')}]`,
     chunk_index: chunk.index,
     metadata: (chunk.metadata || {}) as Json,
   }))

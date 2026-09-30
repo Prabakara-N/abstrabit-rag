@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { Type, type FunctionDeclaration } from '@google/genai'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { Json } from '@/types/database'
 
@@ -16,19 +17,19 @@ export type SaveTaskArgs = z.infer<typeof saveTaskSchema>
 export type SendNotificationArgs = z.infer<typeof sendNotificationSchema>
 
 // Tool definitions for new Gemini SDK
-export const toolDefinitions = [
+export const toolDefinitions: FunctionDeclaration[] = [
   {
     name: 'save_task',
     description: 'Save a task to the workspace task list. Use this when the user asks to create, save, or remember a task or to-do item.',
     parameters: {
-      type: 'object',
+      type: Type.OBJECT,
       properties: {
         title: {
-          type: 'string',
+          type: Type.STRING,
           description: 'The task title (max 200 characters)',
         },
         description: {
-          type: 'string',
+          type: Type.STRING,
           description: 'Optional task description (max 1000 characters)',
         },
       },
@@ -39,10 +40,10 @@ export const toolDefinitions = [
     name: 'send_notification',
     description: 'Send a notification message to Discord. Use this when the user asks to send a notification, alert, or message.',
     parameters: {
-      type: 'object',
+      type: Type.OBJECT,
       properties: {
         message: {
-          type: 'string',
+          type: Type.STRING,
           description: 'The message to send (max 500 characters)',
         },
       },

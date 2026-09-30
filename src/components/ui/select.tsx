@@ -13,7 +13,10 @@ interface SelectProps {
 
 function Select({ value, onValueChange, children }: SelectProps) {
   return (
-    <SelectPrimitive.Root value={value} onValueChange={onValueChange}>
+    <SelectPrimitive.Root
+      value={value}
+      onValueChange={(val) => val && onValueChange?.(val)}
+    >
       {children}
     </SelectPrimitive.Root>
   )

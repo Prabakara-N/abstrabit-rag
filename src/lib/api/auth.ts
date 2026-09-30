@@ -88,16 +88,10 @@ export async function requireResourceAccess(
 
   const { user, supabase } = authResult
 
-  // Get resource with workspace ownership check
+  // Get resource workspace_id
   const { data: resource, error } = await supabase
     .from(table)
-    .select(`
-      id,
-      workspace_id,
-      workspaces!inner (
-        user_id
-      )
-    `)
+    .select('id, workspace_id')
     .eq('id', resourceId)
     .single()
 
@@ -105,8 +99,15 @@ export async function requireResourceAccess(
     return notFoundError(`${table.slice(0, -1)} not found`)
   }
 
-  const workspace = resource.workspaces as { user_id: string } | null
-  if (workspace?.user_id !== user.id) {
+  // Verify workspace ownership
+  const { data: workspace } = await supabase
+    .from('workspaces')
+    .select('id')
+    .eq('id', resource.workspace_id)
+    .eq('user_id', user.id)
+    .single()
+
+  if (!workspace) {
     return forbiddenError('Access denied')
   }
 

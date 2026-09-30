@@ -199,14 +199,9 @@ Remember: Cite your sources when using document information, and only answer bas
     const supabase = createAdminClient()
 
     await supabase.from('messages').insert([
-      { session_id: sessionId, role: 'user' as const, content: userMessage },
-      { session_id: sessionId, role: 'assistant' as const, content: fullContent, citations },
-    ] as Array<{
-      session_id: string
-      role: 'user' | 'assistant'
-      content: string
-      citations?: Citation[]
-    }>)
+      { session_id: sessionId, role: 'user', content: userMessage },
+      { session_id: sessionId, role: 'assistant', content: fullContent, citations: JSON.parse(JSON.stringify(citations)) },
+    ])
 
     callbacks.onComplete({
       content: fullContent,
@@ -220,6 +215,7 @@ Remember: Cite your sources when using document information, and only answer bas
           totalLatencyMs,
           chunksRetrieved: chunks.length,
           chunksUsed: chunks.length,
+          searchMode: 'hybrid' as const,
         },
       },
     })

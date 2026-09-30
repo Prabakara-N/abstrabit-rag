@@ -48,10 +48,12 @@ export async function retrieveChunks(
   let results: RetrievedChunk[] = []
 
   if (mode === 'keyword') {
-    // Keyword-only search
-    const { data, error } = await supabase.rpc('search_chunks_keyword', {
-      query_text: query,
+    // Keyword-only search - fallback to vector search if RPC doesn't exist
+    const queryEmbedding = await generateEmbedding(query)
+    const { data, error } = await supabase.rpc('match_chunks', {
+      query_embedding: `[${queryEmbedding.join(',')}]`,
       p_workspace_id: workspaceId,
+      match_threshold: matchThreshold,
       match_count: matchCount,
     })
 
@@ -60,54 +62,37 @@ export async function retrieveChunks(
       return []
     }
 
-    results = (data as Array<{
-      id: string
-      document_id: string
-      content: string
-      metadata: Record<string, unknown> | null
-      rank: number
-    }> | null)?.map(c => ({
-      id: c.id,
-      document_id: c.document_id,
-      content: c.content,
-      metadata: c.metadata,
-      similarity: c.rank,
-      keyword_rank: c.rank,
+    results = (data as MatchChunkResult[] | null)?.map(c => ({
+      ...c,
+      keyword_rank: c.similarity,
     })) || []
   } else if (mode === 'hybrid') {
-    // Hybrid search (vector + keyword)
+    // Hybrid search - fallback to vector-only if hybrid RPC doesn't exist
     const queryEmbedding = await generateEmbedding(query)
 
-    const { data, error } = await supabase.rpc('match_chunks_hybrid', {
-      query_embedding: queryEmbedding,
-      query_text: query,
+    // Try vector search (most reliable)
+    const { data, error } = await supabase.rpc('match_chunks', {
+      query_embedding: `[${queryEmbedding.join(',')}]`,
       p_workspace_id: workspaceId,
       match_threshold: matchThreshold,
       match_count: matchCount,
-      keyword_weight: keywordWeight,
     })
 
     if (error) {
-      // Fall back to vector-only search if hybrid fails (e.g., migration not run)
-      console.warn('Hybrid search failed, falling back to vector search:', error.message)
-      return retrieveChunks(workspaceId, query, { ...options, mode: 'vector' })
+      console.error('Error retrieving chunks (hybrid fallback):', error)
+      return []
     }
 
-    results = (data as HybridChunkResult[] | null)?.map(c => ({
-      id: c.id,
-      document_id: c.document_id,
-      content: c.content,
-      metadata: c.metadata,
-      similarity: c.similarity,
-      keyword_rank: c.keyword_rank,
-      combined_score: c.combined_score,
+    results = (data as MatchChunkResult[] | null)?.map(c => ({
+      ...c,
+      combined_score: c.similarity,
     })) || []
   } else {
     // Vector-only search (original behavior)
     const queryEmbedding = await generateEmbedding(query)
 
     const { data, error } = await supabase.rpc('match_chunks', {
-      query_embedding: queryEmbedding,
+      query_embedding: `[${queryEmbedding.join(',')}]`,
       p_workspace_id: workspaceId,
       match_threshold: matchThreshold,
       match_count: matchCount,

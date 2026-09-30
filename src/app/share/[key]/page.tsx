@@ -10,6 +10,15 @@ interface SharedMessage {
   content: string
 }
 
+interface SharedChat {
+  id: string
+  share_key: string
+  title: string | null
+  messages: SharedMessage[]
+  view_count: number
+  created_at: string
+}
+
 export default async function SharedChatPage({
   params,
 }: {
@@ -19,15 +28,17 @@ export default async function SharedChatPage({
   const supabase = createAdminClient()
 
   // Get the shared chat
-  const { data: sharedChat, error } = await supabase
+  const { data, error } = await supabase
     .from('shared_chats')
     .select('*')
     .eq('share_key', key)
     .single()
 
-  if (error || !sharedChat) {
+  if (error || !data) {
     notFound()
   }
+
+  const sharedChat = data as unknown as SharedChat
 
   // Increment view count
   await supabase

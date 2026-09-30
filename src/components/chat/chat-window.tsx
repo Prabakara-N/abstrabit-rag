@@ -787,11 +787,11 @@ export function ChatWindow() {
                 <Button size="sm" onClick={() => copyToClipboard(shareUrl)}>
                   {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                 </Button>
-                <Button size="sm" variant="outline" asChild>
-                  <a href={shareUrl} target="_blank" rel="noopener noreferrer">
+                <a href={shareUrl} target="_blank" rel="noopener noreferrer">
+                  <Button size="sm" variant="outline">
                     <ExternalLink className="h-4 w-4" />
-                  </a>
-                </Button>
+                  </Button>
+                </a>
               </div>
             ) : (
               <Button
