@@ -5,7 +5,7 @@ A production-ready RAG (Retrieval-Augmented Generation) application with multi-w
 ## Features
 
 - **Multi-Workspace Support**: Create and manage multiple workspaces with strict data isolation
-- **Document Management**: Upload and manage text documents (.txt, .md)
+- **Document Management**: Upload and manage documents (.txt, .md, .pdf)
 - **AI-Powered Chat**: Ask questions about your documents with source citations
 - **Tool Calling**: AI can save tasks and send Discord notifications
 - **Tool Call Logs**: Track all AI tool executions
@@ -16,12 +16,13 @@ A production-ready RAG (Retrieval-Augmented Generation) application with multi-w
 
 | Layer | Technology |
 |-------|------------|
-| Frontend | Next.js 14 (App Router) |
-| Styling | Tailwind CSS + shadcn/ui |
+| Frontend | Next.js 16 (App Router) |
+| Styling | Tailwind CSS 4 + shadcn/ui |
 | Auth | Supabase Auth |
 | Database | Supabase PostgreSQL + pgvector |
-| LLM | Gemini 1.5 Flash |
-| Embeddings | Gemini text-embedding-004 (768 dimensions) |
+| LLM | Gemini 2.0 Flash |
+| Embeddings | Gemini embedding-002 (768 dimensions) |
+| PDF Parsing | unpdf (pdfjs-dist wrapper) |
 | Hosting | Vercel |
 
 ## Prerequisites

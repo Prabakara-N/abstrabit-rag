@@ -62,9 +62,12 @@ export async function ingestDocument(
   }
 
   // Chunk the content
+  console.log(`[Ingestion] Content length: ${content.length} chars`)
   const chunks = chunkText(content)
+  console.log(`[Ingestion] Created ${chunks.length} chunks`)
 
   if (chunks.length === 0) {
+    console.log(`[Ingestion] No chunks created - content may be too short or empty`)
     return {
       success: false,
       error: 'No content to process',

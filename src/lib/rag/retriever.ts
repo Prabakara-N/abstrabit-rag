@@ -123,6 +123,8 @@ export async function retrieveChunks(
     })) || []
   }
 
+  console.log(`[Retriever] Found ${results.length} chunks for query: "${query.slice(0, 50)}..."`)
+
   if (results.length === 0) {
     return []
   }
